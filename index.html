@@ -85,6 +85,13 @@
       }
     }
     #gallery { grid-area: slider; }
+    #chatBtn {
+      position: fixed; right: 20px; bottom: 20px; z-index: 100;
+      background: #16a34a; color: #fff; text-decoration: none;
+      padding: 14px 20px; border-radius: 30px; font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    #chatBtn:hover { background: #15803d; }
     #searchForm { display: flex; gap: 8px; margin-bottom: 10px; }
     #searchForm input { flex: 1; padding: 10px; font-size: 1rem; border: 1px solid #fdba74; border-radius: 6px; }
     #searchForm button, #pager button {
@@ -225,6 +232,8 @@
       &copy; 2026 제주 특산물 홍보 사이트 · 🌺 혼저 옵서예!
     </footer>
   </div>
+
+  <a id="chatBtn" href="agent.html" target="_blank" rel="noopener">💬 오름 추천 에이전트</a>
 
   <script>
     const PER_PAGE = 10;
