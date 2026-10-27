@@ -148,6 +148,7 @@
       <div id="pager">
         <button id="prevPage" type="button">이전 10개</button>
         <span id="pageInfo"></span>
+        <button id="toggle" type="button">⏸ 정지</button>
         <button id="nextPage" type="button">다음 10개</button>
       </div>
     </div>
@@ -249,6 +250,7 @@
         $('msg').textContent = '';
         index = 0;
         render();
+        startAuto();
       } catch (err) {
         $('msg').textContent = err.message;
       }
@@ -268,7 +270,7 @@
         t.src = im.previewURL;
         t.alt = im.tags;
         if (i === index) t.className = 'active';
-        t.onclick = () => { index = i; render(); };
+        t.onclick = () => { stopAuto(); index = i; render(); };
         $('thumbs').appendChild(t);
       });
       $('thumbs').style.display = 'flex';
@@ -285,15 +287,28 @@
       render();
     }
 
+    let timer = null;
+    function startAuto() {
+      stopAuto();
+      timer = setInterval(() => move(1), 500);
+      $('toggle').textContent = '⏸ 정지';
+    }
+    function stopAuto() {
+      clearInterval(timer);
+      timer = null;
+      $('toggle').textContent = '▶ 재생';
+    }
+    $('toggle').onclick = () => (timer ? stopAuto() : startAuto());
+
     $('searchForm').addEventListener('submit', e => { e.preventDefault(); search(true); });
-    $('prev').onclick = () => move(-1);
-    $('next').onclick = () => move(1);
+    $('prev').onclick = () => { stopAuto(); move(-1); };
+    $('next').onclick = () => { stopAuto(); move(1); };
     $('prevPage').onclick = () => { page--; search(false); };
     $('nextPage').onclick = () => { page++; search(false); };
     document.addEventListener('keydown', e => {
       if (!images.length || e.target.tagName === 'INPUT') return;
-      if (e.key === 'ArrowLeft') move(-1);
-      if (e.key === 'ArrowRight') move(1);
+      if (e.key === 'ArrowLeft') { stopAuto(); move(-1); }
+      if (e.key === 'ArrowRight') { stopAuto(); move(1); }
     });
 
     search(true);
