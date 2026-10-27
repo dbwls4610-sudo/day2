@@ -3,283 +3,300 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>제주대학교</title>
+  <title>제주 특산물</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       font-family: sans-serif;
-      background: #f3f4f6;
+      background: #fff7ed;
       color: #222;
     }
-    header, footer {
-      background: #2563eb;
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-template-areas:
+        "header  header"
+        "nav     nav"
+        "slider  slider"
+        "section aside"
+        "article aside"
+        "footer  footer";
+      gap: 12px;
+    }
+    header, nav, section, article, aside, footer {
+      background: #fff;
+      border: 2px solid #fdba74;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    header {
+      grid-area: header;
+      background: #f97316;
       color: #fff;
       text-align: center;
-      padding: 1rem;
     }
-    header h1 { margin: 0; font-size: 1.5rem; }
+    header h1 { margin: 0 0 4px; font-size: 1.8rem; }
+    header p { margin: 0; }
     nav {
-      background: #1e40af;
+      grid-area: nav;
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
+      gap: 8px;
+      background: #fed7aa;
     }
     nav a {
-      color: #fff;
+      color: #7c2d12;
       text-decoration: none;
-      padding: 0.4rem 1rem;
+      font-weight: bold;
+      padding: 6px 14px;
       border-radius: 6px;
     }
-    nav a:hover { background: rgba(255, 255, 255, 0.2); }
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.25rem;
-      padding: 1.5rem 1rem;
-    }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 640px;
-      overflow: hidden;
+    nav a:hover { background: #fb923c; color: #fff; }
+    section { grid-area: section; }
+    article { grid-area: article; }
+    aside { grid-area: aside; background: #ffedd5; }
+    footer {
+      grid-area: footer;
       text-align: center;
+      background: #7c2d12;
+      color: #fff;
+      border-color: #7c2d12;
+      font-size: 0.875rem;
     }
-    .card-header {
-      background: #e5e7eb;
-      padding: 0.75rem;
-      font-weight: bold;
+    h2 { margin-top: 0; color: #c2410c; }
+    h3 { margin: 0 0 4px; }
+    .item {
+      padding: 10px 0;
+      border-bottom: 1px dashed #fdba74;
     }
-    .card-body { padding: 1rem 1.5rem; }
-    .card-body p { margin: 0.5rem 0; }
-    footer { font-size: 0.875rem; }
+    .item:last-child { border-bottom: none; }
+    .item p { margin: 0; }
+    aside ul { padding-left: 1.2rem; margin: 0 0 16px; }
+    aside li { margin-bottom: 6px; }
+    @media (max-width: 640px) {
+      .wrap {
+        grid-template-columns: 1fr;
+        grid-template-areas: "header" "nav" "slider" "section" "article" "aside" "footer";
+      }
+    }
+    #gallery { grid-area: slider; }
+    #searchForm { display: flex; gap: 8px; margin-bottom: 10px; }
+    #searchForm input { flex: 1; padding: 10px; font-size: 1rem; border: 1px solid #fdba74; border-radius: 6px; }
+    #searchForm button, #pager button {
+      padding: 10px 18px; font-size: 1rem; border: 0; border-radius: 6px;
+      background: #f97316; color: #fff; cursor: pointer;
+    }
+    #searchForm button:hover, #pager button:hover { background: #ea580c; }
+    #pager button:disabled { background: #d1d5db; cursor: default; }
+    #msg { text-align: center; min-height: 1.4em; color: #b91c1c; margin: 0 0 6px; }
+    #viewer { position: relative; background: #000; border-radius: 10px; overflow: hidden; display: none; }
+    #viewer img { display: block; width: 100%; height: 420px; object-fit: contain; }
+    .nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5); color: #fff; border: 0; border-radius: 6px;
+      font-size: 1.5rem; padding: 8px 14px; cursor: pointer;
+    }
+    #prev { left: 8px; }
+    #next { right: 8px; }
+    .badge {
+      position: absolute; bottom: 8px; background: rgba(0, 0, 0, 0.6);
+      color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 0.875rem;
+    }
+    #credit { left: 8px; }
+    #counter { right: 8px; }
+    #thumbs { display: none; gap: 6px; margin-top: 8px; overflow-x: auto; }
+    #thumbs img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.6; }
+    #thumbs img.active { opacity: 1; outline: 2px solid #f97316; }
+    #pager { display: none; justify-content: center; align-items: center; gap: 12px; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🌴 제주대학교 🌴</h1>
-  </header>
+  <div class="wrap">
+    <header>
+      <h1>🍊 제주 특산물 이야기 🌊</h1>
+      <p>바람과 햇살, 바다가 키운 제주의 맛을 만나 보세요</p>
+    </header>
 
-  <nav>
-    <a href="#">홈</a>
-    <a href="#">소개</a>
-    <a href="#">문의</a>
-  </nav>
+    <nav>
+      <a href="#fruit">🍊 과일</a>
+      <a href="#sea">🐟 수산물</a>
+      <a href="#meat">🐖 육류</a>
+      <a href="#snack">🍡 가공·간식</a>
+      <a href="#tip">💡 구매 팁</a>
+    </nav>
 
-  <main>
-    <section class="card">
-      <div class="card-header">🌴 제주대학교에 오신 것을 환영합니다</div>
-      <div class="card-body">
-        <p>푸른 바다와 한라산이 품은 대학, 제주대학교입니다.</p>
-        <p>제주의 자연 속에서 꿈을 키우는 배움의 터전입니다.</p>
-        <p>지역과 세계를 잇는 열린 지성의 중심입니다.</p>
-        <p>당신의 가능성이 시작되는 곳, 제주대학교입니다.</p>
-        <p>배움이 일상이 되고 도전이 추억이 되는 캠퍼스입니다.</p>
-        <p>자연과 사람이 함께 숨 쉬는 아름다운 대학입니다.</p>
-        <p>제주의 역사와 미래를 함께 만들어 갑니다.</p>
-        <p>한 걸음 더 나아가는 용기를 응원합니다.</p>
-        <p>여러분의 오늘이 제주의 내일이 됩니다.</p>
-        <p>제주대학교와 함께라면 어디든 갈 수 있습니다.</p>
+    <div id="gallery" class="gallery-box" style="background:#fff;border:2px solid #fdba74;border-radius:10px;padding:16px;">
+      <h2>🖼️ 제주 이미지 갤러리</h2>
+      <form id="searchForm">
+        <input id="query" type="text" value="제주도" placeholder="검색어 (예: 감귤, 한라봉, 제주 바다)" required>
+        <button type="submit">검색</button>
+      </form>
+      <p id="msg"></p>
+      <div id="viewer">
+        <img id="slide" alt="">
+        <button class="nav-btn" id="prev" type="button">&#10094;</button>
+        <button class="nav-btn" id="next" type="button">&#10095;</button>
+        <span class="badge" id="credit"></span>
+        <span class="badge" id="counter"></span>
+      </div>
+      <div id="thumbs"></div>
+      <div id="pager">
+        <button id="prevPage" type="button">이전 10개</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage" type="button">다음 10개</button>
+      </div>
+    </div>
+
+    <section id="fruit">
+      <h2>🍊 제주의 과일</h2>
+      <div class="item">
+        <h3>🍊 감귤</h3>
+        <p>제주를 대표하는 새콤달콤한 과일입니다. 겨울철 비타민 보충에 좋고, 껍질째 먹기 좋은 극조생부터 만감류까지 다양합니다.</p>
+      </div>
+      <div class="item">
+        <h3>🟠 한라봉</h3>
+        <p>꼭지 부분이 볼록 솟아 한라산을 닮은 과일입니다. 알이 굵고 과즙이 풍부하며 향이 진합니다.</p>
+      </div>
+      <div class="item">
+        <h3>🧡 천혜향</h3>
+        <p>하늘이 내린 향기라는 이름처럼 향긋하고 부드러운 단맛이 특징입니다.</p>
+      </div>
+      <div class="item">
+        <h3>🍋 레드향 · 황금향</h3>
+        <p>껍질이 얇고 과육이 달콤해서 선물용으로도 인기가 많습니다.</p>
       </div>
     </section>
 
-    <section class="card">
-      <div class="card-header">🎓 교육, 미래를 여는 힘</div>
-      <div class="card-body">
-        <p>학생 한 사람 한 사람을 소중히 여기는 교육을 합니다.</p>
-        <p>기초 학문부터 첨단 융합 분야까지 폭넓게 배웁니다.</p>
-        <p>이론과 실습이 균형을 이루는 교육과정을 지향합니다.</p>
-        <p>스스로 묻고 답하는 능동적 학습을 장려합니다.</p>
-        <p>토론과 협업으로 문제 해결 능력을 키웁니다.</p>
-        <p>전공의 경계를 넘나드는 융합 교육을 추구합니다.</p>
-        <p>창의적 사고로 새로운 길을 찾는 인재를 기릅니다.</p>
-        <p>교수와 학생이 가까이 소통하는 배움의 공동체입니다.</p>
-        <p>끊임없이 변화하는 사회에 맞춰 교육을 혁신합니다.</p>
-        <p>배움의 즐거움을 아는 평생 학습자를 길러 냅니다.</p>
+    <article id="sea">
+      <h2>🐟 바다가 주는 선물</h2>
+      <div class="item">
+        <h3>🐟 갈치</h3>
+        <p>은빛 제주 갈치는 구이와 조림 모두 담백하고 고소합니다.</p>
       </div>
-    </section>
-
-    <section class="card">
-      <div class="card-header">🔬 연구, 제주에서 세계로</div>
-      <div class="card-body">
-        <p>제주의 특성을 살린 독창적인 연구를 이어 갑니다.</p>
-        <p>해양, 환경, 생명 분야의 연구가 활발합니다.</p>
-        <p>지속 가능한 미래를 위한 연구를 선도합니다.</p>
-        <p>연구 성과를 지역사회와 나누고 확산합니다.</p>
-        <p>학생도 연구의 주인공이 될 수 있습니다.</p>
-        <p>호기심에서 출발한 질문이 발견으로 이어집니다.</p>
-        <p>국내외 연구기관과 활발히 교류하고 협력합니다.</p>
-        <p>작은 아이디어가 큰 변화를 만든다고 믿습니다.</p>
-        <p>탐구하는 즐거움을 캠퍼스 곳곳에서 만나 보세요.</p>
-        <p>연구의 깊이가 대학의 품격을 만듭니다.</p>
+      <div class="item">
+        <h3>🐠 옥돔</h3>
+        <p>살이 단단하고 맛이 깊어 예로부터 귀한 생선으로 대접받았습니다.</p>
       </div>
-    </section>
-
-    <section class="card">
-      <div class="card-header">🌊 자연이 주는 특별한 캠퍼스</div>
-      <div class="card-body">
-        <p>창밖으로 펼쳐지는 제주의 풍경이 일상이 됩니다.</p>
-        <p>맑은 공기와 푸른 하늘 아래서 공부합니다.</p>
-        <p>사계절 변하는 캠퍼스의 풍경이 마음을 채웁니다.</p>
-        <p>봄에는 꽃길, 가을에는 단풍길을 걸어 보세요.</p>
-        <p>산책하며 생각을 정리하기 좋은 캠퍼스입니다.</p>
-        <p>자연 속에서 쉼과 집중이 함께 있습니다.</p>
-        <p>바람과 햇살이 함께하는 열린 공간입니다.</p>
-        <p>제주의 자연을 가까이에서 배우고 지켜 갑니다.</p>
-        <p>환경을 생각하는 친환경 캠퍼스를 만들어 갑니다.</p>
-        <p>이곳에서의 하루하루가 한 편의 풍경화가 됩니다.</p>
+      <div class="item">
+        <h3>🐚 전복 · 소라 · 성게</h3>
+        <p>해녀가 직접 물질해 건져 올린 신선한 해산물입니다.</p>
       </div>
-    </section>
-
-    <section class="card">
-      <div class="card-header">🌏 글로벌, 세계와 만나는 문</div>
-      <div class="card-body">
-        <p>세계 여러 나라의 대학과 교류합니다.</p>
-        <p>교환학생으로 더 넓은 세상을 경험해 보세요.</p>
-        <p>다양한 문화를 가진 친구들과 함께 배웁니다.</p>
-        <p>외국어 학습과 국제 교류 프로그램을 지원합니다.</p>
-        <p>글로벌 감각을 갖춘 인재로 성장하세요.</p>
-        <p>국경을 넘어 소통하는 능력을 키웁니다.</p>
-        <p>유학생과 함께하는 다문화 캠퍼스입니다.</p>
-        <p>세계 속의 제주, 제주 속의 세계를 만듭니다.</p>
-        <p>해외 연수와 인턴십의 기회가 열려 있습니다.</p>
-        <p>도전하는 당신에게 세계는 가까운 이웃입니다.</p>
+      <div class="item">
+        <h3>🦑 한치</h3>
+        <p>여름철 시원한 물회나 쫄깃한 건한치로 즐기기 좋습니다.</p>
       </div>
-    </section>
 
-    <section class="card">
-      <div class="card-header">🤝 지역과 함께 성장하는 대학</div>
-      <div class="card-body">
-        <p>지역사회와 함께 호흡하는 대학입니다.</p>
-        <p>지역 문제 해결에 앞장서는 책임 있는 대학입니다.</p>
-        <p>산업체와 협력하여 현장형 인재를 양성합니다.</p>
-        <p>지역 산업 발전에 이바지하는 기술을 개발합니다.</p>
-        <p>주민과 함께하는 열린 강좌를 운영합니다.</p>
-        <p>봉사와 나눔으로 따뜻한 사회를 만듭니다.</p>
-        <p>제주의 문화와 전통을 소중히 이어 갑니다.</p>
-        <p>지역 인재가 지역에서 꿈을 펼치도록 돕습니다.</p>
-        <p>함께할 때 더 큰 가치를 만든다고 믿습니다.</p>
-        <p>제주와 함께 자라고, 제주를 위해 일합니다.</p>
+      <h2 id="meat" style="margin-top:20px;">🐖 제주의 고기</h2>
+      <div class="item">
+        <h3>🐖 흑돼지</h3>
+        <p>쫄깃한 식감과 고소한 풍미로 제주 여행의 필수 메뉴로 꼽힙니다. 구이, 고기국수, 순대로 만나 보세요.</p>
       </div>
-    </section>
+    </article>
 
-    <section class="card">
-      <div class="card-header">💼 취업과 진로, 든든한 동반자</div>
-      <div class="card-body">
-        <p>진로 설계부터 취업까지 체계적으로 지원합니다.</p>
-        <p>전문 상담으로 나에게 맞는 길을 찾아 드립니다.</p>
-        <p>현장 실습으로 실무 경험을 미리 쌓아 보세요.</p>
-        <p>자격증과 직무 역량 강화 프로그램을 운영합니다.</p>
-        <p>선배와의 만남으로 생생한 조언을 듣습니다.</p>
-        <p>다양한 분야로 진출한 동문이 함께하고 있습니다.</p>
-        <p>창업을 꿈꾸는 학생을 적극 응원합니다.</p>
-        <p>공공기관, 기업, 연구기관 등 폭넓은 진로가 열립니다.</p>
-        <p>준비된 당신의 내일을 응원합니다.</p>
-        <p>꿈을 현실로 만드는 길을 함께 걷겠습니다.</p>
-      </div>
-    </section>
+    <aside id="snack">
+      <h2>🍡 간식 · 가공품</h2>
+      <ul>
+        <li>🍡 오메기떡</li>
+        <li>🍫 감귤 초콜릿</li>
+        <li>🍵 제주 녹차</li>
+        <li>🍯 귤 청 · 한라봉 청</li>
+        <li>🍰 귤 타르트 · 쿠키</li>
+        <li>🥜 땅콩 · 우도 땅콩 과자</li>
+        <li>🌿 제주 고사리</li>
+      </ul>
 
-    <section class="card">
-      <div class="card-header">🏠 즐거운 캠퍼스 라이프</div>
-      <div class="card-body">
-        <p>동아리와 학생 활동으로 청춘이 더욱 빛납니다.</p>
-        <p>문화, 예술, 체육 활동이 활기차게 펼쳐집니다.</p>
-        <p>축제의 열기가 캠퍼스를 가득 채웁니다.</p>
-        <p>새로운 친구를 만나는 설렘이 가득한 곳입니다.</p>
-        <p>도서관에서 몰입하고 잔디밭에서 쉬어 가세요.</p>
-        <p>편리한 생활 시설과 복지로 학업을 돕습니다.</p>
-        <p>기숙사 생활로 또 하나의 가족을 만나 보세요.</p>
-        <p>맛있는 학식과 카페가 일상에 즐거움을 더합니다.</p>
-        <p>함께 웃고 함께 성장하는 소중한 시간입니다.</p>
-        <p>대학 생활의 모든 순간이 추억이 됩니다.</p>
-      </div>
-    </section>
+      <h2 id="tip">💡 구매 팁</h2>
+      <ul>
+        <li>🗓️ 감귤은 겨울, 한라봉은 늦겨울~봄이 제철입니다.</li>
+        <li>📦 산지 직송으로 신선하게 받아 보세요.</li>
+        <li>🏷️ 원산지와 등급 표시를 확인하세요.</li>
+        <li>🎁 선물용은 포장 상태를 꼭 살펴보세요.</li>
+        <li>🧊 수산물은 냉장·냉동 배송을 선택하세요.</li>
+      </ul>
+    </aside>
 
-    <section class="card">
-      <div class="card-header">💡 장학과 복지, 꿈을 지원합니다</div>
-      <div class="card-body">
-        <p>배우고 싶은 마음이 경제적 이유로 멈추지 않도록 돕습니다.</p>
-        <p>다양한 장학 제도로 학업을 응원합니다.</p>
-        <p>학생의 건강과 안전을 세심하게 살핍니다.</p>
-        <p>심리 상담으로 마음의 건강을 함께 돌봅니다.</p>
-        <p>장애 학생도 편하게 배울 수 있는 환경을 만듭니다.</p>
-        <p>공정한 기회가 보장되는 대학을 지향합니다.</p>
-        <p>학생의 목소리에 귀 기울이는 대학입니다.</p>
-        <p>성실한 노력이 보상받는 문화를 만듭니다.</p>
-        <p>든든한 지원 속에서 학업에 집중하세요.</p>
-        <p>당신의 꿈은 우리 모두의 꿈입니다.</p>
-      </div>
-    </section>
+    <footer>
+      &copy; 2026 제주 특산물 홍보 사이트 · 🌺 혼저 옵서예!
+    </footer>
+  </div>
 
-    <section class="card">
-      <div class="card-header">🌟 제주대학교와 함께하세요</div>
-      <div class="card-body">
-        <p>새로운 시작을 망설이는 당신을 환영합니다.</p>
-        <p>열정이 있다면 제주대학교가 길을 열어 드립니다.</p>
-        <p>도전하고, 성장하고, 빛나는 4년을 약속합니다.</p>
-        <p>지금 이 순간이 당신의 이야기를 쓰는 첫 장입니다.</p>
-        <p>제주의 바람처럼 자유롭게, 한라산처럼 굳건하게.</p>
-        <p>배움의 끝에서 더 큰 세상을 만나게 될 것입니다.</p>
-        <p>제주대학교, 당신의 꿈이 머무는 곳입니다.</p>
-        <p>함께 만드는 내일, 함께 빛나는 제주대학교.</p>
-        <p>오늘의 선택이 평생의 자부심이 됩니다.</p>
-        <p>제주대학교에서 꿈의 날개를 펴세요! 🌺</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    &copy; 2026 제주대학교 홍보 페이지
-  </footer>
-
-  <style>
-    .part-outline { outline: 2px dashed #f59e0b; outline-offset: -2px; position: relative; }
-    .part-tag {
-      position: absolute; top: 4px; left: 4px; z-index: 10;
-      background: #f59e0b; color: #000; font: bold 12px sans-serif;
-      padding: 2px 8px; border-radius: 4px; pointer-events: none;
-    }
-    #legend {
-      position: fixed; right: 12px; bottom: 12px; z-index: 100;
-      background: #111; color: #fff; font: 13px/1.6 sans-serif;
-      padding: 10px 14px; border-radius: 8px; opacity: 0.92;
-    }
-    #legend b { color: #f59e0b; }
-  </style>
   <script>
-    const parts = [
-      ['헤더', 'header'],
-      ['탭(메뉴)', 'nav'],
-      ['카드', '.card'],
-      ['버튼', 'button, input[type=button], input[type=submit]'],
-      ['입력창', 'input:not([type=button]):not([type=submit]), textarea, select'],
-      ['목록', 'ul, ol'],
-      ['푸터', 'footer']
-    ];
-    const rows = [];
-    parts.forEach(([name, sel]) => {
-      const els = document.querySelectorAll(sel);
-      els.forEach((el, i) => {
-        el.classList.add('part-outline');
-        const tag = document.createElement('span');
-        tag.className = 'part-tag';
-        tag.textContent = els.length > 1 ? name + ' ' + (i + 1) : name;
-        el.prepend(tag);
+    const PER_PAGE = 10;
+    let images = [], index = 0, page = 1, total = 0;
+    const $ = id => document.getElementById(id);
+
+    async function search(newQuery) {
+      const q = $('query').value.trim();
+      if (!q) return;
+      if (newQuery) page = 1;
+      $('msg').textContent = '불러오는 중...';
+      try {
+        const res = await fetch('/api/pixabay?q=' + encodeURIComponent(q) + '&page=' + page);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '요청 실패 (' + res.status + ')');
+        images = data.hits;
+        total = data.totalHits;
+        if (!images.length) {
+          $('msg').textContent = '검색 결과가 없습니다.';
+          $('viewer').style.display = $('thumbs').style.display = $('pager').style.display = 'none';
+          return;
+        }
+        $('msg').textContent = '';
+        index = 0;
+        render();
+      } catch (err) {
+        $('msg').textContent = err.message;
+      }
+    }
+
+    function render() {
+      const img = images[index];
+      $('slide').src = img.webformatURL;
+      $('slide').alt = img.tags;
+      $('counter').textContent = (index + 1) + ' / ' + images.length;
+      $('credit').textContent = 'by ' + img.user + ' · Pixabay';
+      $('viewer').style.display = 'block';
+
+      $('thumbs').innerHTML = '';
+      images.forEach((im, i) => {
+        const t = document.createElement('img');
+        t.src = im.previewURL;
+        t.alt = im.tags;
+        if (i === index) t.className = 'active';
+        t.onclick = () => { index = i; render(); };
+        $('thumbs').appendChild(t);
       });
-      rows.push(name + ': ' + (els.length ? '<b>' + els.length + '개</b>' : '없음'));
+      $('thumbs').style.display = 'flex';
+
+      const lastPage = Math.max(1, Math.ceil(total / PER_PAGE));
+      $('pageInfo').textContent = page + ' / ' + lastPage + ' 페이지';
+      $('prevPage').disabled = page <= 1;
+      $('nextPage').disabled = page >= lastPage;
+      $('pager').style.display = 'flex';
+    }
+
+    function move(step) {
+      index = (index + step + images.length) % images.length;
+      render();
+    }
+
+    $('searchForm').addEventListener('submit', e => { e.preventDefault(); search(true); });
+    $('prev').onclick = () => move(-1);
+    $('next').onclick = () => move(1);
+    $('prevPage').onclick = () => { page--; search(false); };
+    $('nextPage').onclick = () => { page++; search(false); };
+    document.addEventListener('keydown', e => {
+      if (!images.length || e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowLeft') move(-1);
+      if (e.key === 'ArrowRight') move(1);
     });
-    const legend = document.createElement('div');
-    legend.id = 'legend';
-    legend.innerHTML = rows.join('<br>');
-    document.body.appendChild(legend);
+
+    search(true);
   </script>
 </body>
 </html>

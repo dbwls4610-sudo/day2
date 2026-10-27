@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixabay 이미지 슬라이더</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f3f4f6;
+      color: #222;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+    h1 { text-align: center; }
+    form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .row { display: flex; gap: 8px; }
+    input { flex: 1; padding: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; }
+    button { padding: 10px 18px; font-size: 1rem; border: 0; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    #message { text-align: center; min-height: 1.5em; color: #b91c1c; }
+    .slider { position: relative; background: #000; border-radius: 10px; overflow: hidden; display: none; }
+    .slider img { display: block; width: 100%; height: 450px; object-fit: contain; }
+    .nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5); font-size: 1.5rem; padding: 8px 14px;
+    }
+    .nav-btn:hover { background: rgba(0, 0, 0, 0.8); }
+    #prev { left: 8px; }
+    #next { right: 8px; }
+    #counter {
+      position: absolute; bottom: 8px; right: 8px;
+      background: rgba(0, 0, 0, 0.6); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 0.875rem;
+    }
+    #credit {
+      position: absolute; bottom: 8px; left: 8px;
+      background: rgba(0, 0, 0, 0.6); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 0.875rem;
+    }
+    #thumbs { display: none; gap: 6px; margin-top: 8px; overflow-x: auto; }
+    #thumbs img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.6; }
+    #thumbs img.active { opacity: 1; outline: 2px solid #2563eb; }
+    #pager { display: none; justify-content: center; align-items: center; gap: 12px; margin-top: 12px; }
+    #pager button:disabled { background: #9ca3af; cursor: default; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🖼️ Pixabay 이미지 슬라이더</h1>
+
+    <form id="form">
+      <input id="apiKey" type="password" placeholder="Pixabay API Key" autocomplete="off" required>
+      <div class="row">
+        <input id="query" type="text" placeholder="검색어 (예: 제주도, 감귤)" required>
+        <button type="submit">검색</button>
+      </div>
+    </form>
+
+    <div id="message"></div>
+
+    <div class="slider" id="slider">
+      <img id="slide" alt="">
+      <button class="nav-btn" id="prev" type="button">&#10094;</button>
+      <button class="nav-btn" id="next" type="button">&#10095;</button>
+      <span id="credit"></span>
+      <span id="counter"></span>
+    </div>
+    <div id="thumbs"></div>
+
+    <div id="pager">
+      <button id="prevPage" type="button">이전 10개</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage" type="button">다음 10개</button>
+    </div>
+  </div>
+
+  <script>
+    const PER_PAGE = 10;
+    let images = [];
+    let index = 0;
+    let page = 1;
+    let total = 0;
+    let lastQuery = '';
+
+    const $ = id => document.getElementById(id);
+
+    try { $('apiKey').value = localStorage.getItem('pixabayKey') || ''; } catch (e) {}
+
+    async function search(newQuery) {
+      const key = $('apiKey').value.trim();
+      const q = $('query').value.trim();
+      if (!key || !q) return;
+      if (newQuery) page = 1;
+      lastQuery = q;
+      $('message').textContent = '불러오는 중...';
+      try { localStorage.setItem('pixabayKey', key); } catch (e) {}
+
+      const url = 'https://pixabay.com/api/?key=' + encodeURIComponent(key) +
+        '&q=' + encodeURIComponent(q) +
+        '&image_type=photo&per_page=' + PER_PAGE + '&page=' + page;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(res.status === 400 ? 'API Key가 올바르지 않습니다.' : '요청 실패 (' + res.status + ')');
+        const data = await res.json();
+        images = data.hits;
+        total = data.totalHits;
+        if (!images.length) {
+          $('message').textContent = '검색 결과가 없습니다.';
+          $('slider').style.display = $('thumbs').style.display = $('pager').style.display = 'none';
+          return;
+        }
+        $('message').textContent = '';
+        index = 0;
+        render();
+      } catch (err) {
+        $('message').textContent = err.message;
+      }
+    }
+
+    function render() {
+      const img = images[index];
+      $('slide').src = img.webformatURL;
+      $('slide').alt = img.tags;
+      $('counter').textContent = (index + 1) + ' / ' + images.length;
+      $('credit').textContent = 'by ' + img.user;
+      $('slider').style.display = 'block';
+
+      $('thumbs').innerHTML = '';
+      images.forEach((im, i) => {
+        const t = document.createElement('img');
+        t.src = im.previewURL;
+        t.alt = im.tags;
+        if (i === index) t.className = 'active';
+        t.onclick = () => { index = i; render(); };
+        $('thumbs').appendChild(t);
+      });
+      $('thumbs').style.display = 'flex';
+
+      const lastPage = Math.max(1, Math.ceil(total / PER_PAGE));
+      $('pageInfo').textContent = page + ' / ' + lastPage + ' 페이지';
+      $('prevPage').disabled = page <= 1;
+      $('nextPage').disabled = page >= lastPage;
+      $('pager').style.display = 'flex';
+    }
+
+    function move(step) {
+      index = (index + step + images.length) % images.length;
+      render();
+    }
+
+    $('form').addEventListener('submit', e => { e.preventDefault(); search(true); });
+    $('prev').onclick = () => move(-1);
+    $('next').onclick = () => move(1);
+    $('prevPage').onclick = () => { page--; search(false); };
+    $('nextPage').onclick = () => { page++; search(false); };
+    document.addEventListener('keydown', e => {
+      if (!images.length || e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowLeft') move(-1);
+      if (e.key === 'ArrowRight') move(1);
+    });
+  </script>
+</body>
+</html>
