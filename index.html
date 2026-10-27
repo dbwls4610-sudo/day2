@@ -120,6 +120,38 @@
     #thumbs img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.6; }
     #thumbs img.active { opacity: 1; outline: 2px solid #f97316; }
     #pager { display: none; justify-content: center; align-items: center; gap: 12px; margin-top: 10px; }
+    #msg { overflow-wrap: anywhere; }
+    .wrap > * { min-width: 0; }
+    #viewer img { height: clamp(220px, 45vw, 420px); }
+    img { max-width: 100%; }
+
+    /* PC: 넓은 화면 */
+    @media (min-width: 1024px) {
+      .wrap { max-width: 1140px; grid-template-columns: 2.4fr 1fr; gap: 16px; padding: 20px; }
+      header h1 { font-size: 2.2rem; }
+      #viewer img { height: 480px; }
+    }
+
+    /* 태블릿 */
+    @media (min-width: 641px) and (max-width: 1023px) {
+      .wrap { grid-template-columns: 1.6fr 1fr; }
+    }
+
+    /* 모바일 */
+    @media (max-width: 640px) {
+      .wrap { padding: 8px; gap: 8px; }
+      header, nav, section, article, aside, footer, #gallery { padding: 12px; }
+      header h1 { font-size: 1.35rem; }
+      nav { gap: 4px; }
+      nav a { padding: 6px 10px; font-size: 0.9rem; }
+      h2 { font-size: 1.15rem; }
+      #searchForm { flex-direction: column; }
+      #searchForm button { width: 100%; }
+      .nav-btn { font-size: 1.2rem; padding: 6px 10px; }
+      #pager { flex-wrap: wrap; }
+      #pager button { padding: 8px 12px; font-size: 0.9rem; }
+      #chatBtn { right: 12px; bottom: 12px; padding: 12px 16px; font-size: 0.9rem; }
+    }
   </style>
 </head>
 <body>
